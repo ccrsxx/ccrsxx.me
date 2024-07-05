@@ -27,6 +27,9 @@ type CustomEnvKeys =
   | 'MESSAGING_SENDER_ID'
   | 'APP_ID'
 
+  // Database
+  | 'DATABASE_URL'
+
   // GitHub
   | 'GITHUB_TOKEN'
 

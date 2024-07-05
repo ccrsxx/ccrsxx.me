@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id             String  @id @default(uuid()) @db.Uuid
+  role           Role    @default(GUEST)
+  name           String
+  image          String
+  email          String  @unique
+  githubId       String? @unique @map("github_id")
+  githubUsername String? @unique @map("github_username")
+
+  Content   Content[]
+  guestbook Guestbook[]
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  @@map("user")
+}
+
+model Guestbook {
+  id   String @id @default(uuid()) @db.Uuid
+  text String
+
+  userId String @map("user_id") @db.Uuid
+
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  @@map("guestbook")
+}
+
+model Content {
+  id   String      @id @default(uuid()) @db.Uuid
+  slug String      @unique
+  type ContentType @default(BLOG)
+
+  userId String @map("user_id") @db.Uuid
+
+  User User @relation(fields: [userId], references: [id])
+
+  ContentView ContentView[]
+  ContentLike ContentLike[]
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  @@map("content")
+}
+
+model ContentLike {
+  id String @id @default(uuid()) @db.Uuid
+
+  contentId   String @map("content_id") @db.Uuid
+  ipAddressId String @map("ip_address_id") @db.Uuid
+
+  content   Content   @relation(fields: [contentId], references: [id])
+  IpAddress IpAddress @relation(fields: [ipAddressId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  @@map("content_like")
+}
+
+model ContentView {
+  id String @id @default(uuid()) @db.Uuid
+
+  contentId   String @map("content_id") @db.Uuid
+  ipAddressId String @map("ip_address_id") @db.Uuid
+
+  content   Content   @relation(fields: [contentId], references: [id])
+  ipAddress IpAddress @relation(fields: [ipAddressId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  @@map("content_view")
+}
+
+model IpAddress {
+  id        String @id @default(uuid()) @db.Uuid
+  ipAddress String @unique @map("ip_address")
+
+  ContentView ContentView[]
+  ContentLike ContentLike[]
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  @@map("ip_address")
+}
+
+enum Role {
+  GUEST
+  AUTHOR
+}
+
+enum ContentType {
+  BLOG
+  PROJECT
+}
