@@ -26,7 +26,7 @@
     "clsx": "^2.0.0",
     "firebase": "^10.0.0",
     "framer-motion": "^11.0.0",
-    "next": "^13.1.4",
+    "next": "^14.0.0",
     "next-auth": "^4.19.2",
     "next-themes": "^0.3.0",
     "nodemailer": "^6.9.1",
